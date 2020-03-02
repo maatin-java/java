@@ -1,0 +1,219 @@
+/单链表实现
+
+// Nnode-车厢
+//int dat - 存储下一个火车节点地址
+//singlelinglist - 火车（单链表）
+//node last- 永远指向当前火车的最后一个车厢
+//addlast- 在火车尾部添加车厢
+//addFirst-在车头添加
+
+class Node{
+    private int data;
+    Node next;
+
+    public Node(int data, Node next) {
+        this.data = data;
+        this.next = next;
+    }
+
+    public int getData() {
+        return data;
+    }
+
+    public void setData(int data) {
+        this.data = data;
+    }
+
+    public Node getNext() {
+        return next;
+    }
+
+    public void setNext(Node next) {
+        this.next = next;
+    }
+}
+
+
+public class SingleLinkList {
+    //  永远指向车尾
+    private Node last;
+    private int size;
+    private Node first;
+
+    public Node getFirst() {
+        return first;
+    }
+
+    //头插
+    public void addFirst(int data) {
+        Node node = new Node(data, null);
+        if (first == null) {
+            //只有一个车厢
+            first = last = node;
+            size++;
+            return;
+        }
+        node.next = first;
+        first = node;
+        size++;
+    }
+
+    //尾插
+    public void addLast(int data) {
+        //产生新车厢
+        Node node = new Node(data, null);
+        if (last == null) {
+            //只有一个车厢
+            last = first = node;
+            size++;
+            return;
+        }
+        last.next = node;
+        last = node;
+        size++;
+    }
+
+    //遍历链表
+    public void print() {
+//从火车头开始遍历
+        Node temp = first;
+        while (temp != null) {
+            System.out.print(temp.getData() + "、");
+            temp = temp.next;
+
+        }
+        System.out.println();
+    }
+
+
+    //链表回文
+    //1.2.3.4.5.nunll
+    //5.4.3.2.1.null
+    // 将原链表遍历一次，边遍历边头插新的链表
+    public Node reverse(Node head) {
+
+        //判断边界
+        if (head == null || head.next == null) {
+            return head;
+        }
+        // 当前链表不为空,遍历当前链表,产生新节点,把新节点头插另一个链表
+        Node newHead = new Node(head.getData(), null);
+        //遍历原先链表
+        while (head.next != null) {
+            //产生新节点
+            Node node = new Node(head.next.getData(), null);
+            //新节点头插到链表
+            node.next = newHead;
+            newHead = node;
+            head = head.next;
+
+        }
+        return newHead;
+    }
+
+
+    //删除一个节点
+    public void remove(int data) {
+        //特殊条件删除头节点
+        if (first.getData() == data) {
+            first = first.next;
+        } else {
+            //需要找到待删节点的前驱节点
+            Node prev = first;
+            while (prev.next != null) {
+                if (prev.next.getData() == data) {
+                    //此时prev正好是待删的前驱节点
+                    prev.next = prev.next.next;
+                    size--;
+                    return;
+                } else {
+                    prev = prev.next;
+                }
+            }
+        }
+    }
+
+    //删除所有值为data的节点
+    public void removeAll(int data) {
+        //引入一个虚拟节点
+        Node dummyHead = new Node(data - 1, null);
+        dummyHead.next = first;
+        Node prev = dummyHead;
+        while (prev.next != null) {
+            if (prev.next.getData() == data) {
+                prev.next = prev.next.next;
+                size--;
+            } else {
+                prev = prev.next;
+            }
+        }
+        first = dummyHead.next;
+
+    }
+
+    //链表任意索引处插入节点
+    public void addIndex(int index, int data) {
+        //边界值
+        if (index < 0 || index >= size) {
+            System.out.println("索引非法");
+        } else if (index == size) {
+            //尾插
+            addLast(data);
+        } else if (index == 0) {
+            addFirst(data);
+        } else {
+            //中间插入
+            //1->2->3 插入后变为1->10->2->3
+            //先产生新节点
+            Node newNOde = new Node(data, null);
+            //找到待插入的前驱节点
+            Node prev = getIndexNode(index - 1);
+            //将新节点尾插到前驱节点后
+
+            //让10地址指向2
+            newNOde.next = prev.next;
+            //让1地址指向10
+            prev.next = newNOde;
+            size++;
+        }
+    }
+
+    //根据传入的index找到对应的Node节点
+    private Node getIndexNode(int index) {
+        //从头开始走index步数找对应节点
+        Node temp = first;
+        for (int i = 0; i < index; i++) {
+            //当i=index时循环结束，同时找到index
+            temp = temp.next;
+        }
+        //temp是寻找走过的步数
+        return temp;
+    }
+
+
+    //修改指定index的值
+    public void set(int index, int data) {
+        //判断合法性
+        //边界值
+        if (index < 0 || index >= size) {
+            System.out.println("索引非法");
+        } else {
+            Node node = getIndexNode(index);
+            node.setData(data);
+        }
+
+    }
+
+    //查询链表中是否有内容节点
+    public boolean contains(int data) {
+        Node temp = first;
+        while (temp != null) {
+            if (temp.getData() == data) {
+                System.out.println("元素找到");
+                return true;
+            }
+            temp = temp.next;
+        }
+        System.out.println("没找到元素");
+        return false;
+    }
