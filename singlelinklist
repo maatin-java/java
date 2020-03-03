@@ -1,0 +1,145 @@
+//返回中间节点（快慢指针）
+    public Node middleNode(Node head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        Node low = head;
+        Node fast = head;
+        while (fast.next != null && fast != null) {
+            low = low.next;
+            fast = fast.next.next;
+        }
+        return low;
+    }
+
+    public Node FindKthToTail(Node first, int k) {
+        Node temp = first;
+        int FindKthToTail = 0;
+        while (temp != null) {
+            FindKthToTail++;
+            temp = temp.next;
+        }
+        temp = first;
+        //1 2 3 4 5 6 7  k=3  FindKthToTail=7
+        int i = 0;
+        for (i = 0; i < FindKthToTail - k; i++) {
+            temp = temp.next;
+        }
+        return temp;
+    }
+
+
+    //soulution 7
+    public Node deleteDuplication(Node head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        Node dummyhead = new Node(-1,head);
+        Node prev = dummyhead;
+        Node cur = dummyhead.next;
+        while (cur != null) {
+            if (cur.next != null && cur.getData() == cur.next.getData()) {
+                //此时要删除cur
+                while (cur.next != null && cur.getData() == cur.next.getData()) {
+                    //此时cur一直需要删除
+                    cur = cur.next;
+
+                }
+                cur = cur.next;
+                prev.next = cur;
+            }
+            //出循环后，cur停留在重复节点的最后一个，所以还需要再删一次
+            else {
+                prev = cur;
+                cur = cur.next;
+
+            }
+
+        }
+        return dummyhead.next;
+    }
+
+    //solution 160
+    public Node getIntersectionNode (Node headA,Node headB){
+        if(headA==null || headB==null){
+            return null;
+        }
+        //两次遍历，先计算长度，再把长的裁剪掉，长度一样后同时开始走
+        int countA=0;
+        int countB=0;
+        Node pA = headA;
+        Node pB = headB;
+        while (pA!=null){
+            countA++;
+            pA=pA.next;
+        }
+        while(pB!=null){
+            countB++;
+            pB=pB.next;
+        }
+        while(countB>countA){
+            countB--;
+            headB=headB.next;
+        }
+        //此时两链表一样长
+        while(headA!=null){
+            if(headA==headB){
+                return headA;
+            }
+            else{
+                headA=headA.next;
+                headB=headB.next;
+            }
+        }
+        return null;
+    }
+
+
+    //solution 141
+    public boolean hasCycle(Node head){
+        //快慢指针
+        if(head==null||head.next==null){
+            return false;
+        }
+        Node low = head,fast=head;
+        while (fast!=null&&fast.next!=null){
+            low=low.next;
+            fast=fast.next.next;
+            if(low==fast){
+                return  true;
+            }
+        }
+        return  false;
+    }
+
+    //soulution 142
+    //快慢指针 第一次相遇“相遇点”，low不动，fast回到head，两个再次同时走（这次速度一样），第二次的相遇点就是环入口
+    public Node detectCycle(Node head) {
+    if(head==null||head.next==null){
+        return null;
+    }
+    Node low =head,fast=head;
+    while (fast!=null&&fast.next!=null){
+        low=low.next;
+        fast=fast.next.next;
+        if(low==fast){
+            //第一个相遇点
+            break;
+        }
+    }
+    //low为相遇点
+        fast=head;
+    while(fast!=null&&fast.next!=null){
+        low=low.next;
+        fast=fast.next;
+        if(low==fast){
+            //此时low为第二个相遇点，也是环入口。
+            return low;
+
+        }
+    }
+    return low;
+    }
+    }
+
+
