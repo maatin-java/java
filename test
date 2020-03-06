@@ -1,0 +1,47 @@
+
+    //solution 141
+    public boolean hasCycle(Node head){
+        //快慢指针
+        if(head==null||head.next==null){
+            return false;
+        }
+        Node low = head,fast=head;
+        while (fast!=null&&fast.next!=null){
+            low=low.next;
+            fast=fast.next.next;
+            if(low==fast){
+                return  true;
+            }
+        }
+        return  false;
+    }
+
+    //soulution 142
+    //快慢指针 第一次相遇“相遇点”，low不动，fast回到head，两个再次同时走（这次速度一样），第二次的相遇点就是环入口
+    public Node detectCycle(Node head) {
+    if(head==null||head.next==null){
+        return null;
+    }
+    Node low =head,fast=head;
+    while (fast!=null&&fast.next!=null){
+        low=low.next;
+        fast=fast.next.next;
+        if(low==fast){
+            //第一个相遇点
+            break;
+        }
+    }
+    //low为相遇点
+        fast=head;
+    while(fast!=null&&fast.next!=null){
+        low=low.next;
+        fast=fast.next;
+        if(low==fast){
+            //此时low为第二个相遇点，也是环入口。
+            return low;
+
+        }
+    }
+    return low;
+    }
+    }
