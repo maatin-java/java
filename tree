@@ -1,0 +1,43 @@
+
+class myNode{
+    public char value;
+    public myNode left;//节点地址
+    public myNode right;
+
+    public myNode(char value){
+        this.value=value;
+        this.left=null;
+        this.right=null;
+    }
+
+}
+public class TestBinaryTree {
+
+
+    public myNode createNode(){
+        myNode A = new myNode('A');
+        myNode B = new myNode('B');
+        myNode C = new myNode('C');
+        myNode D = new myNode('D');
+        myNode E = new myNode('E');
+        myNode F = new myNode('F');
+        myNode G = new myNode('G');
+        A.left=B;
+        B.left=D;
+        B.right=E;
+        A.right=C;
+        C.right=G;
+        C.left=F;
+        return A;
+    }
+
+    //前序遍历
+    void preOrderTraversal(myNode root){
+        if(root ==null){
+            return;
+        }
+        System.out.println(root.value);
+        preOrderTraversal(root.left);
+        preOrderTraversal(root.right);
+
+    }
