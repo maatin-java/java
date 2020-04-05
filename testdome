@@ -1,0 +1,125 @@
+/**
+ * Created with IntelliJ IDEA.
+ * Description:
+ * User: GAOBO
+ * Date: 2020-04-05
+ * Time: 9:31
+ */
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/**
+ * 写一个泛型类： 用来求数组当中的最大值
+ *
+ *  泛型的边界：上界。extends Comparable<T>
+ *   T extends Comparable<T>   一点是 实现了  Comparable接口的
+ *
+ */
+
+class Student implements Comparable<Student>{
+    public String name;
+    public int age;
+
+    public Student(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                '}';
+    }
+
+    @Override
+    public int compareTo(Student o) {
+        return this.age-o.age;
+    }
+}
+class Algorithm<T extends Comparable<T>> {
+    public T findMaxNum (T[] array) {
+        T max = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if(array[i].compareTo(max) > 0) {
+                max = array[i];
+            }
+        }
+        return max;
+    }
+}
+class Algorithm2 {
+    public static<T extends Comparable<T>>  T findMaxNum (T[] array) {
+        T max = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if(array[i].compareTo(max) > 0) {
+                max = array[i];
+            }
+        }
+        return max;
+    }
+}
+
+class GenericList {
+
+    public static <T> void printList(ArrayList<T> list) {
+        // set    add       用于写数据
+        for (T t  :  list) {
+            System.out.print(t +" ");
+        }
+        System.out.println();
+    }
+
+    public static  void printList2(ArrayList<?> list) {
+        //用于读取       源码
+        for (Object obj  :  list) {
+            System.out.print(obj +" ");
+        }
+        System.out.println();
+    }
+
+}
+
+public class TestDemo2 {
+
+    /**
+     * 通配符
+     * @param args
+     */
+    public static void main(String[] args) {
+        ArrayList<Integer> arrayList = new ArrayList<>();
+        arrayList.add(1);
+        arrayList.add(2);
+        arrayList.add(3);
+        GenericList.printList2(arrayList);
+    }
+
+    public static void main3(String[] args) {
+        Integer[] array  = {13,2,5,7,1,89,12};
+        //类型的推导：  根据实参   推导出  形参
+        int ret =  Algorithm2.<Integer>findMaxNum(array);
+        System.out.println(ret);
+
+    }
+    public static void main1(String[] args) {
+        Algorithm<Integer> algorithm = new Algorithm<>();
+        Integer[] array  = {13,2,5,7,1,89,12};
+        int ret = algorithm.findMaxNum(array);
+        System.out.println(ret);
+    }
+
+    public static void main2(String[] args) {
+        Student[] students = new Student[3];
+        students[0] = new Student("bbit",19);
+        students[1] = new Student("gaobo",29);
+        students[2] = new Student("helo",7);
+
+        Algorithm<Student> algorithm2 = new Algorithm<>();
+        Student student = algorithm2.findMaxNum(students);
+        System.out.println(student);
+    }
+
+
+}
