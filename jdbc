@@ -1,0 +1,38 @@
+package Arr;
+//import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.sun.org.apache.xpath.internal.operations.String;
+
+import javax.security.sasl.SaslServer;
+import java.sql.*;
+
+
+public class Main {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        //1.获取驱动
+        Class.forName("com.mysql.jdbc.Driver");
+
+        //2.获取链接
+        //                            ip地址   端口号：3306    数据库
+        java.lang.String ur1 = "jdbc:mysql://127.0.0.1:3306/java30?useSSL=false";
+        java.lang.String username = "root";
+        java.lang.String password = "252500";
+        Connection connection = DriverManager.getConnection(ur1,username,password);//url,username,password
+
+        //3.获取语句
+        Statement statement = connection.createStatement();
+
+        //4.执行语句
+        java.lang.String sq1 = "show tables";
+        ResultSet resultSet = null;//结果集
+        resultSet=statement.executeQuery(sq1);
+
+        if (resultSet.next()){
+            java.lang.String str=resultSet.getString(1);
+            System.out.println(str);
+
+        }
+
+        //5.关闭链接
+    }
+}
