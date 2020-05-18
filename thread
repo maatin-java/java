@@ -1,0 +1,42 @@
+package Thred;
+
+import org.omg.PortableServer.ThreadPolicyOperations;
+
+public class thredDeom {
+    static class MyThread extends Thread{
+
+        @Override
+        public void run(){
+            System.out.println("lll" );
+            while (true){  //为了避免线程走完一遍就关了
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("我是新线程");
+
+            }
+        }
+    }
+    public static void main(String[] args) {
+        Thread  t =
+                new MyThread();
+        t.start();
+        while(true){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("我是主线程");
+        }
+
+        //idea"运行“的时候，本质上会创建新的进程来执行
+        //使用jconsole来连接这个java进程来分析内部的一些情况，如果java进程销毁，jconsole会出现”连接中断“
+
+    }
+}
+
+
