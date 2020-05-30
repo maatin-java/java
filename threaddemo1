@@ -1,0 +1,52 @@
+package Thred;
+
+public class ThreadDemo8 {
+    //单例模式
+    //饿汉模式
+    static class Singleton {
+        private static Singleton instance = new Singleton();//只要类一被加载，就会进行实例化（会给对象分配内存）
+        //                                                      速度太快，比喻成饿汉
+
+        private Singleton() {
+        }
+
+        public static Singleton getInstance() {
+            return instance;
+        }
+    }
+
+    public static void main1(String[] args) {
+        //要想获取singleton实例，必须通过getinstance
+        //不能new（因为构造方法是private的，new会编译出错。）
+
+        Singleton singleton = Singleton.getInstance();
+        Singleton singleton1 = Singleton.getInstance();
+        System.out.println(singleton == singleton1);
+        //getinstance得到类内部的静态成员
+        //静态成员是和类相关的（在类对象中），每个类只有一个类对象，此时每次调用getintance得到的实例是同一个对象
+
+    }
+    //懒汉模式（当加载类的时候，不会创建实例，直到第一次使用实例再去创建）—》效率高
+    static class Signleton2{
+        //程序加载的时候并没有立刻申请空间
+        private static Signleton2 instance=null;
+
+        private Signleton2(){
+        }
+
+        public static Signleton2 getInstance() {
+            if(instance==null){
+                instance = new Signleton2();
+            }
+            return instance;
+        }
+    }
+
+    public static void main(String[] args) {
+        Signleton2 signleton2 = Signleton2.getInstance();
+        Signleton2 signleton21= Signleton2.getInstance();
+        System.out.println(signleton2==signleton21);
+
+    }
+}
+
