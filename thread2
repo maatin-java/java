@@ -1,0 +1,29 @@
+package Thred;
+
+public class ThreadDemo9 {
+    //饿汉模式 改进版本
+    //把调用instance加锁成了一个整体 （读取instance、判断是否为null、new对象 锁成了一个整体）
+    //不再有线程安全问题
+    static class Sinleton {
+        private volatile static Sinleton instance = null; //volatile阻止过度优化 读操作会被编译器优化
+        private Sinleton() {
+        }
+        public static Sinleton getInstance() {
+            if (instance == null) {//线程安全问题只在第一次调用出现，之后instance不为null到时候就不需要再加锁
+
+                synchronized (Sinleton.class) {
+                    if (instance == null) {
+                        instance = new Sinleton();
+                    }
+                }
+                }
+                return instance;
+            }
+    }
+}
+
+
+//线程安全单例模式的三个要点：
+//1.合适位置加锁
+//2.双重if判定，保证效率
+//3.volatile避免过度优化
