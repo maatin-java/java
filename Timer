@@ -1,0 +1,101 @@
+package Thred;
+
+
+//定时器
+//Timer 最核心的接口往Timer指定一个任务，指定任务多长时间后执行
+//一个Timer 对象中可以注册n个任务，并且有条不紊的依次唤醒
+
+//Timer内部主要需要包含以一个"带优先级的阻塞队列”，时间越靠前任务优先级就越高
+//另外用一个专门的线程来定时扫描首元素，如果首元素时间已到，就执行首元素任务
+//为了避免扫描线程过于频繁（忙等），需要借助wait/notify优化
+
+
+import java.util.concurrent.PriorityBlockingQueue;
+
+
+import static java.lang.System.currentTimeMillis;
+
+public class ThreadDemo11 {
+    //创建一个类来描述往定时器里放的任务
+    static class Task implements Comparable<Task>{
+        //command 表述任务具体干什么
+        private Runnable command;
+        //time表示啥时候可以执行任务
+        private long time;
+
+        public Task(Runnable command,long time) {
+            this.command = command;
+            this.time = time+ currentTimeMillis();
+        }
+        public void run(){
+            command.run();
+        }
+
+        @Override
+        public int compareTo(Task o) {
+            //时间越高前，优先级越高
+            return (int) (this.time-o.time);
+        }
+    }
+
+    static class Timer{
+//创建优先级队列
+        //优先队列包含了都有哪些任务需要执行(带阻塞的优先队列）
+        private PriorityBlockingQueue<Task> queue = new PriorityBlockingQueue<>();
+        //还需要有一个专门的线程来扫描队首元素
+
+        class worker extends Thread{
+            @Override
+            public void run() {
+                while (true){
+                    try {
+                        //进行take操作，相当于已经把元素从队列删除了
+                        //如果task时间不成熟，在把task赛回队列
+
+                        Task task = queue.take();//阻塞方式获取元素用take  相反用put
+                        long curtime = System.currentTimeMillis();
+                        if(task.time>curtime){
+                            //时机还未到
+                            queue.put(task);
+
+                            //用wait优化等待，不做忙等
+//                            synchronized (mailBox ){
+//                                //wait此时没有nitify也会自动被唤醒
+//                                mailBox.wait(task.time-curtime);
+//                            }
+                        }else {
+                            //时机已到
+                            task.run();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        public Timer(){
+            worker worker = new worker();
+            worker.start();
+        }
+
+        //还要提供一个用于注册任务的核心接口
+        //command表示操作任务，after表示多长时间后执行任务
+        public void schedule(Runnable command,long  after){
+            Task task = new Task(command,after);
+            queue.put(task);
+        }
+    }
+    public static void main(String[] args) {
+    Timer timer = new Timer();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("闹钟响了");
+            timer.schedule(this,3000);
+        }
+    };
+        System.out.println("开始计时");
+    timer.schedule(runnable,3000);
+    }
+}
