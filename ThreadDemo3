@@ -1,0 +1,103 @@
+package Thred;
+
+//线程池
+//核心组成主要：1.是一个阻塞队列，阻塞队列中放有当前要执行的所有任务
+//              2.一个包含n个线程的顺序表/数组
+
+//生产者：当把某个任务安排给线程池执行的时候，就把这个任务加入到阻塞队列中
+//消费者：数组中随便取出一个线程，让这个线程来消费阻塞队列，并执行队列中的任务
+
+//线程池的使用者只需要关注哪些任务要执行，一共有几个任务在执行
+
+//主要接口：1.注册任务到线程池  2.结束所有线程
+
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+
+public class ThreadDemo12 {
+    //创建类描述线程池中的线程长啥样
+    static class Worker extends Thread{
+        private BlockingQueue<Runnable> queue = null;
+
+        public Worker(BlockingQueue<Runnable> queue) {
+            this.queue = queue;
+        }
+
+        @Override
+        public void run() {
+
+                try {
+                    while (!Thread.currentThread().isInterrupted()) {//没有被中断
+
+                        //queue 是阻塞队列，当任务队列为空，worker线程就会在take方法阻塞，直到有新任务加入queue
+
+                        Runnable runnable = queue.take();
+                        runnable.run();
+                    }
+                } catch (InterruptedException e) {
+                  //  e.printStackTrace();
+                    //catch到异常说明线程要被终止了
+                }
+        }
+    }
+    //创建类来描述线程对象
+    static class MyThreadPool{
+        //线程池内置的任务队列，每个工作线程都要从这个队列中获取任务并执行
+        private BlockingQueue<Runnable> queue = new LinkedBlockingDeque<>();
+        //包含了当前线程池中都有哪些工作线程
+        private List<Worker> workers= new ArrayList<>();
+        //限制线程池最多有10个线程
+        private int maxWorkerCount = 10;
+
+        //核心接口
+        //1.注册任务到线程池
+        public void execute(Runnable command){
+            if(workers.size()<maxWorkerCount){
+                //此时线程数目不足，创建新的worker到线程池
+                Worker worker = new Worker(queue);
+                worker.start();
+
+            }
+            try {
+                queue.put(command);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        //结束所有线程
+        public  void shutdown(){
+            for (Worker worker:workers){
+                worker.interrupt();
+            }
+            //interrupt 只是触发异常并设置标记位，线程也并不是立马销毁
+            for (Worker worker:workers){
+                try {
+                    worker.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            //当shutdown执行完毕，就能保证所有线程都结束了
+        }
+
+        public static void main(String[] args) throws InterruptedException {
+           MyThreadPool myThreadPool = new MyThreadPool();
+            for (int i = 0; i <100 ; i++) {
+                myThreadPool.execute(new Runnable(){
+                    @Override
+                    public void run() {
+                        System.out.println("我是要执行的任务");
+                    }
+                });
+            }
+            Thread.sleep(1000 * 5);
+            myThreadPool.shutdown();
+
+        }
+    }
+
+}
