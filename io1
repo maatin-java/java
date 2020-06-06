@@ -1,0 +1,98 @@
+package IO;
+
+import java.io.File;
+import java.io.IOException;
+
+public class io {
+    public static void main(String[] args) {
+        //d:/test.txt 这就是一个文件的路径
+        //在windows 上也可以写成 d:\\test.txt
+
+//        File file =new File("d:/test.txt");
+//        File file1 = new File("d:\\test.txt");
+
+        //针对项目目录中的test.txt ，使用file来表示 有两种方式：
+        //1.使用绝对路径
+//        File file = new File( "E:\\JAVA_30_MATING\\src\\IO\\test.txt");
+//        //2.使用相对路径(默认的“工作目录” 项目的根目录）
+//        File file1 = new File("./IO/test.txt");//  . 表示当前目录往下找  ..表示从当前目录 的上级目录往下找
+
+
+//        //判定文件/路径是否存在
+//        File file = new File("E:\\JAVA_30_MATING\\src\\IO\\test.txt");
+//        System.out.println(
+//                file.exists()
+//        );
+
+
+        //判定文件是否是目录
+        File file = new File("E:\\JAVA_30_MATING\\src\\IO\\test.txt");
+        System.out.println(file.isDirectory());
+         File file1 = new File("E:\\JAVA_30_MATING\\src\\IO");
+        System.out.println(file1.isDirectory());
+        //判定文件是否是普通文件
+        File file2 = new File("E:\\JAVA_30_MATING\\src\\IO\\test.txt");
+        System.out.println(file2.isFile());
+        File file3 = new File("E:\\JAVA_30_MATING\\src\\IO");
+        System.out.println(file3.isFile());
+
+        //删除文件
+        //file.delete();
+
+        //创建文件
+        File file4 = new File("E:\\JAVA_30_MATING\\src\\IO\\test.txt");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        //创建目录
+        File file5 = new File("d:/java30");
+        //mk = make  dir = directory
+        file5.mkdir();
+
+        File file6 = new File("d:/aa/bb/cc");
+        file6.mkdirs();
+
+        //获取父目录的路径和父目录file对象\
+        //获取到的是一个路径字符串
+        System.out.println(file6.getParent());
+        //获取到的是一个file对象
+        System.out.println(file6.getParentFile());
+
+        //获取目录中包含的内容
+//        File file7 = new File("d:/");
+//        File[] files = file7.listFiles();
+//        for (File f:files){
+//            System.out.println(f);
+//        }
+
+        //递归的把一个目录中所有的目录和文件都获取到
+        File root= new File("d:/Program Files");
+        listALLFiles(root);
+
+    }
+    private static void listALLFiles (File file)
+    {
+        if(file.isDirectory()){
+            //如果当前file是目录，就递归下去找
+            File[] files = file.listFiles();
+            for (File f:files){
+                listALLFiles(f);
+            }
+        }
+        else {
+            //如果当前是文件，输出
+            System.out.println(file);
+        }
+    }
+
+}
+//读写二进制文件就使用字节流
+//读写文本文件就用字符流
+//两个的区别是打开文档，能不能看懂。能看懂的是文本文件（java文件），看不懂就是二进制（。class文件）
+//                                       read / writer              inputStream / outputStream    
+
+
