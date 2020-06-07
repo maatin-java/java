@@ -1,0 +1,65 @@
+package IO;
+
+import java.io.*;
+
+public class io1 {
+    public static void main(String[] args) throws IOException {
+        copyImage();
+    }
+    public static void copyImage() throws IOException {
+             FileInputStream fileInputStream = null;
+             FileOutputStream fileOutputStream = null;
+        try {
+            //1.打开文件，在构造方法里指定打开哪个
+            //可以用一个file对象来指定，也可以之间放一个路径字符串
+             fileInputStream = new FileInputStream("d:/tou.jpg");
+             fileOutputStream = new FileOutputStream("d:/tou2.jpg");//tou存在，tou2不存在。对于outputstream如果文件不存在，就会尝试创建一个
+            //2.读取图片文件
+            //read一次读一个字节 dead（byte[])一次读n个字节 ，此时 byte[]是用户指定的缓冲区.返回值表示实际读到的字节数
+
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            //加循环是为了保证把整个文件读完//先调用read,把返回值写入len里面，再和-1比较
+            while ((len = fileInputStream.read(buffer)) != -1) {//返回-1表示读取结束了
+
+            }
+            //3.把文件内容写到另一个文件中
+            //writer有三个版本
+            //writer（int b） 一次写一个字节
+            //writer（byte[] buffer） 一次写n个字节，把整个数组中的内容全写进去
+            //writer（byte[] buffer，int offset，int len） 版本2 的加强版。上面的读也是同理
+            fileOutputStream.write(buffer, 0, len);//从0开始，写到len
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            //4.关闭文件
+            try {
+
+
+            fileInputStream.close();
+            fileOutputStream.close();//这两个顺序无所谓，但是不能忘
+            //如果不关闭，因为进程的文件描述符表（struct file （来自pcb））是有上限的，一旦达到上限，就无法正常打开后面的文件 -》文件资源泄露
+        }catch (IOException | NullPointerException e){//如果前面异常，intput和output就都还是空，加try catch防止空指针异常
+                e.printStackTrace();
+            }
+        }
+
+        //为了让程序无论如何（前面是否出现io异常）都能走到close，采用了finally
+
+    }
+    //方法二（简单）
+    public static void copyImage2(){
+        try(FileInputStream fileInputStream = new FileInputStream("d:/tou.jpg");
+            FileOutputStream fileOutputStream = new FileOutputStream("d:/tou.jpg");//try()里面的类必须实现closable接口
+            //此时try中的代码执行完毕，会自动调用close
+        ){
+            byte[] buffer = new byte[1024];
+            int len =0;
+            while ((len=fileInputStream.read())!=-1){
+                fileOutputStream.write(buffer,0,len);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
