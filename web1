@@ -1,0 +1,58 @@
+package Web;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
+public class web1 {
+    //创建一个服务器程序，首先需要一个socket对象
+    private DatagramSocket socket =null;
+
+    //服务器启动的时候和端口号关联
+
+    public web1(int port) throws SocketException {
+        socket = new DatagramSocket(port);
+        //这个操作不光吧socket对象关联了一个端口号，还同时关联了一个ip地址
+        //此时这个ip地址如果没有特殊指定就是 0.0.0.0 这个特殊ip意思是当前主机的所有网卡的ip
+        //这个操作一旦成功，就意味着此时从网卡收到的数据操作系统就会按照端口在筛选，如果匹配成功，操作系统就会把数据交给程序处理
+    }
+    //服务器启动逻辑
+    public void start() throws IOException {
+        System.out.println("服务器启动");
+        //一般服务器都是24小时持续工作，正常情况下不会自己结束
+        while (true){//服务器的基本流程:
+            //1.读取请求并解析  //读取操作就是把数据放到DatagramPacket的缓冲区中
+                               // 解析过程就是把byte【】中的数据转成字符串
+            //2.根据请求计算响应
+            //3.把响应结果写回给客户端
+
+            //1
+            DatagramPacket requestPacket = new DatagramPacket(new byte[4096],4096);
+            socket.receive(requestPacket);//读取  //当服务器一启动，就会立刻执行到receive，此时大概率客户端还没发数据过来
+            //此时如果客户端发了数据，那receive就能立刻把数据放在DatagramPacket的缓冲区，如果没数据，receive方法就会阻塞
+            //io操作的特点就是这样：1.等 （比较耗时） 2.拷贝数据
+            String requst = new String(requestPacket.getData(),0,requestPacket.getLength()).trim();//解析
+            //trim 去除一个字符串两边的空字                           //此时得到长度是4096 真实不一定这么长，所以加trim
+
+
+
+            //2
+            String response = new String(requst);
+
+            //3
+            DatagramPacket responsePacket  = new DatagramPacket(response.getBytes(),response.getBytes().length,requestPacket.getSocketAddress());
+            socket.send(responsePacket);
+
+        }
+    }
+    private String process (String requst){
+        //回响
+        return requst;
+    }
+
+    public static void main(String[] args) {
+        //回响服务器
+
+    }
+}
