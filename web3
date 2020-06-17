@@ -1,0 +1,61 @@
+package Web;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+//tcp 版本的回响
+public class web3 {
+    private ServerSocket serverSocket = null;
+
+    public web3(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
+    }
+    public void start() throws IOException {
+        System.out.println("服务器启动");
+        while (true){
+            Socket clientSocket = serverSocket.accept();
+            processConnect(clientSocket);
+        }
+    }
+
+    private void processConnect(Socket clientSocket) {
+        System.out.printf("[%s:%d] 客户端上线\n",clientSocket.getInetAddress().toString(),clientSocket.getPort());
+        //1.为了读写做准备，准备好对应流对象
+        try(BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))){
+                //是为了构造bufferreader和writer
+                //1.读取请求并解析
+
+                String request = bufferedReader.readLine();
+                if(request == null){
+                    System.out.printf("[%s:%d]客户端下线\n",clientSocket.getInetAddress().toString(),clientSocket.getPort());
+                    return;
+                }
+
+                //2.根据请求计算响应
+            String response = process(request);
+                //3.把响应写回给客户端
+            bufferedWriter.write(response+"\n");//换行也很重要
+            bufferedWriter.flush();//此处flush很重要
+
+            //打印一个日志
+            String log = String.format("[%s:%d] rep : %s ; rep: %s",clientSocket.getInetAddress().toString(),clientSocket.getPort(),request,response);
+            System.out.println(log);
+        } catch (IOException e) {
+            //e.printStackTrace();
+            System.out.printf("[%s:%d]客户端下线\n",clientSocket.getInetAddress().toString(),clientSocket.getPort());
+
+        }
+    }
+
+    private String process(String request) {
+        return request;
+    }
+
+    public static void main(String[] args) throws IOException {
+        web3 server = new web3(9090);
+        server.start();
+    }
+}
+
