@@ -1,0 +1,59 @@
+package Web;
+
+import javax.xml.transform.sax.SAXTransformerFactory;
+import java.io.IOException;
+import java.net.*;
+import java.util.Scanner;
+
+public class web2 {
+    DatagramSocket socket = null;
+    //客户端必须要知道服务器的ip和端口号
+    String serverIp;
+    int serverPort;
+
+    public web2(String ip, int port) throws SocketException {
+        this.serverIp = ip;
+        this.serverPort = port;//服务器的端口
+        socket = new DatagramSocket();
+
+    }
+
+    public void start() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        //1.由用户在命令行输入一个字符串
+
+        while (true) {
+            System.out.println(">");
+            String request = scanner.nextLine();
+            if(request.equals("exit")){
+                System.out.println("bye");
+                break;
+            }
+
+            //2.把这个字符串构成一个请求，发送给服务器
+            //客户端send的这个请求对象，内部的数据和服务器接受到的请求对象内部的数据是一致的
+            //这个数据中的内容就是通过网络通信的方式传输过去（各层协议一直封装分用）
+            DatagramPacket requestPacket =new DatagramPacket(request.getBytes(),request.getBytes().length,InetAddress.getByName(serverIp),serverPort);
+            socket.send(requestPacket);
+            //3.读取服务器返回的数据
+            DatagramPacket responsePacket = new DatagramPacket(new byte[4096],4096);
+            socket.receive(requestPacket);
+            String response = new String(responsePacket.getData(),0,responsePacket.getLength());
+            //                                                  表示从0开始              读到length
+
+            //4.把返回的数据打印在显示器上
+            String log = String.format("req:%s;resp:%s",request,response);
+            System.out.println(log);
+
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        //此处的ip和端口都是服务器的
+        String ip = "127.0.0.1";
+        int port  =9090;
+        web2 client = new web2(ip,port);
+        client.start();
+
+    }
+}
